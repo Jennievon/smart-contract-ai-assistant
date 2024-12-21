@@ -1,13 +1,51 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { ContractInput } from "./components/ContractInput";
 import { ContractOutput } from "./components/ContractOutput";
 import { Message } from "./types";
+import { OpenAIService } from "./utils/openai";
 
 function App() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (input: string) => {};
+  // initialising OpenAI service with the API key
+  const openAIService = new OpenAIService(import.meta.env.VITE_OPENAI_API_KEY);
+
+  const handleSubmit = async (input: string) => {
+    try {
+      setIsLoading(true);
+
+      // message from the user
+      const userMessage: Message = { role: "user", content: input };
+      // adding the user message to the messages array
+      const updatedMessages = [...messages, userMessage];
+      setMessages(updatedMessages);
+
+      // generating the smart contract using the OpenAI service with updated msgs
+      const generatedSmartContract = await openAIService.generateSmartContract(
+        updatedMessages
+      );
+
+      // msg from the AI asst with the generated smart contract
+      const aiMessage: Message = {
+        role: "assistant",
+        content: generatedSmartContract,
+      };
+      setMessages([...updatedMessages, aiMessage]);
+    } catch (error) {
+      console.error("Error:", error);
+
+      // error message if there is an error generating the smart contract
+      const errorMessage: Message = {
+        role: "assistant",
+        content:
+          "Sorry, there was an error generating the smart contract. Please try again.",
+      };
+      setMessages([...messages, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
