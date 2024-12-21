@@ -11,17 +11,17 @@ const messageSchema = z.object({
 const messagesArraySchema = z.array(messageSchema);
 
 class RateLimiter {
-  private requests: number[] = [];
-  private windowMs: number;
-  private maxRequests: number;
+  private requests: number[] = []; // array to store request timestamps
+  private windowMs: number; // time window in milliseconds
+  private maxRequests: number; // max requests allowed in the window
 
   constructor(windowMs: number, maxRequests: number) {
     this.windowMs = windowMs;
     this.maxRequests = maxRequests;
   }
 
-  // Check if a request can be made by comparing the number of requests in the window to the max requests
-  // If the number of requests exceeds the max requests, return false
+  // check if a request can be made by comparing the no of requests in the window to the max requests
+  // If the no of requests exceeds the max requests, return false
   canMakeRequest(): boolean {
     const now = Date.now();
     this.requests = this.requests.filter((time) => now - time < this.windowMs);
@@ -42,11 +42,11 @@ export class OpenAIService {
     if (!apiKey) {
       throw new Error("OpenAI API key is required");
     }
+    // adding dangerouslyAllowBrowser option to use the OpenAI API in the browser (client-side)
     this.client = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
   }
 
   async generateSmartContract(messages: Message[]): Promise<string> {
-    // Validate input
     try {
       messagesArraySchema.parse(messages);
     } catch (error) {
@@ -69,7 +69,7 @@ export class OpenAIService {
             Your task is to:
             1. Generate secure, gas-optimized smart contracts
             2. Explain potential security vulnerabilities
-            3. Provide best practices and optimization tips
+            3. Provide best practices and optimisation tips
             4. Format your response in markdown with proper code blocks
             5. Include comments in the code explaining key components`,
           },
@@ -78,8 +78,8 @@ export class OpenAIService {
             content: m.content,
           })),
         ],
-        temperature: 0.7,
-        max_tokens: 2000,
+        temperature: 0.7, // higher temp is for more creative responses/variability
+        max_tokens: 2000, // increase max tokens to allow for longer responses/code
       });
 
       const content = response.choices[0].message.content;
