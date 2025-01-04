@@ -1,6 +1,6 @@
 # Smart Contract AI Assistant
 
-A powerful AI-powered tool that helps developers create secure and optimised smart contracts using natural language descriptions. Built with React, TypeScript, and OpenAI's GPT-4.
+AI-powered tool that helps developers create secure and optimised smart contracts using natural language descriptions. Built with React, TypeScript, and OpenAI's GPT-4.
 
 ## Features
 
